@@ -371,7 +371,7 @@ def main(arglist):
     data = extract_group(subjects, args, exp)
 
     # Calculate evoked response (FIR model)
-    signal = calculate_evoked_ts(data, args.len_et, 
+    signal = calculate_evoked_ts(data, int(args.len_et), 
                                  problem=exp['design_name'], 
                                  tr=int(exp['TR']))
 
@@ -379,7 +379,7 @@ def main(arglist):
     signal['time'] = (signal.time * 2).astype(int)
 
     # save csv of data
-    filepath = op.join(project['analysis_dir'], args.experiment, 'group/roi', 'evoked_' + mask + '.csv')
+    filepath = op.join(project['analysis_dir'], args.experiment, 'group/roi', 'evoked_' + args.mask + '.csv')
     signal.to_csv(filepath, index=False)
 
 def parse_args(arglist):
