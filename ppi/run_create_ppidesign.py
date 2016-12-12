@@ -99,7 +99,7 @@ def extract_roi_prob(in_tuple):
 
 def write_design(in_tuple):
     
-    sub,exp_name,mask,design_file,contrast = in_tuple
+    sub,runs,exp_name,mask,design_file,contrast = in_tuple
     
     #hrf params
     hrf = getattr(glm,'GammaDifferenceHRF')
@@ -212,7 +212,7 @@ def main(design_name):
     for sub in sub_list:
         for exp_name in exp['exps']:
             for mask in exp['masks']:
-                in_tuples.append((sub,exp_name,mask,exp['design_file'],exp['contrast']))
+                in_tuples.append((sub,runs,exp_name,mask,exp['design_file'],exp['contrast']))
 
     ## Run in parallel
     pool = multiprocessing.Pool(processes = exp['n_cores'])
