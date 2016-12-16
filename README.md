@@ -9,7 +9,7 @@ from Lyman, and [Ian Ballard](https://github.com/iancballard?tab=repositories).
 
 These analyses assume that your functional data has been processed with some variant of 
 `run_fmri.py -w preproc reg -t -u -reg epi`, such that the unsmoothed raw data is preprocessed, 
-and then aligned into epi space (1st run) for each subject. An onset file, 
+and then coregistered into epi space (1st run) for each subject. An onset file, 
 containing info about condition labels and onsets, is also necessary.
 
 ### FIR model
@@ -26,3 +26,11 @@ is also performed over a specified window. This analysis is done on a trial-by-t
 so can be helpful for trial-wise correlations between regions or multivariate measures.
 
 ## PPI analyses
+
+### Generate design files for PPI analysis
+
+`run_create_ppidesign.py`: Extract the coregistered preprocessed timeseries from a given 
+ROI, take the principal eigenvariate, and z-score within run. Then convolve the 
+psychological regressor with the HRF, center, and multiply with the timeseries to produce 
+the interaction. Save out the timeseries and interaction as regressors, to be input as 
+a `regressor_file` in the Lyman model parameters (in the experiment file).
