@@ -6,19 +6,6 @@ EXAMPLE:
 python run_fir.py -experiment ap_memory_raw -ts_experiment mvpa_raw -mask rh-hippocampus-tail -len_et 7
 """
 
-from __future__ import division
-import os.path as op
-import itertools
-import numpy as np
-import scipy as sp
-import pandas as pd
-import nibabel as nib
-from scipy import stats
-import statsmodels.api as sm
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import nitime as nit
-
 import sys
 import argparse
 import shutil
@@ -30,11 +17,16 @@ import hashlib
 from scipy.interpolate import interp1d
 from lyman import gather_project_info
 
+from __future__ import division
+import os.path as op
+import numpy as np
+import scipy as sp
+import pandas as pd
+import nibabel as nib
+import nitime as nit
+
 import lyman
-from lyman import mvpa, evoked
 from lyman import tools
-import seaborn as sns
-import moss
 
 # Define some functions
 
@@ -94,7 +86,7 @@ def evoked_extract_subject(subj, mask_name, n_runs, summary_func=np.mean,
 
     ftemp = op.join(ts_dir, "run_{:d}/{}_xfm.nii.gz")
     fstem = "res4d" if residual else "timeseries"
-    ts_files = [ftemp.format(r_i, fstem) for r_i in range(1,n_runs+1)]
+    ts_files = [ftemp.format(r_i, fstem) for r_i in range(1, n_runs+1)]
     print ts_files
 
     # Get the hash value for this extraction
@@ -125,7 +117,7 @@ def evoked_extract_subject(subj, mask_name, n_runs, summary_func=np.mean,
         # Try to use the axis argument to summarize over voxels
         try:
             roi_data = summary_func(roi_data, axis=1)
-            
+
             print "Taking mean for run " + str(run +1)
         # Catch a TypeError and just call the function
         # This lets us do e.g. a PCA
@@ -339,11 +331,7 @@ def calculate_evoked_ts(data, n_bins, problem=None, events=None, tr=2,
                                                        'event': event_names[event_num], 
                                                        'time': np.arange(1, n_bins+1),
                                                        'response': pd.Series(evoked_data[event_num])}))
-
     return evoked_ds
-
-
-
 
 def main(arglist):
     
@@ -362,17 +350,17 @@ def main(arglist):
 
     def extract_group(subjects, args, exp):
         exp_name = args.experiment
-        d = evoked_extract_group(args.mask, exp['n_runs'], subjects=subjects, 
+        d = evoked_extract_group(args.mask, exp['n_runs'], subjects=subjects,
                                  exp_name=exp_name, ts_exp=args.ts_experiment)
-        
+
         return d
 
     # Extract the timeseries from within a mask
     data = extract_group(subjects, args, exp)
 
     # Calculate evoked response (FIR model)
-    signal = calculate_evoked_ts(data, int(args.len_et), 
-                                 problem=exp['design_name'], 
+    signal = calculate_evoked_ts(data, int(args.len_et),
+                                 problem=exp['design_name'],
                                  tr=int(exp['TR']))
 
     signal.time = signal.time-1
