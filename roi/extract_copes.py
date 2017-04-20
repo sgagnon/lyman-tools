@@ -38,7 +38,7 @@ def main(arglist):
 
     # Determine some parameters
     if args.altmodel:
-        exp['exp_name'] = "-".join([experiment, altmodel])
+        exp['exp_name'] = "-".join([args.experiment, args.altmodel])
     else:
         exp['exp_name'] = args.experiment
 
