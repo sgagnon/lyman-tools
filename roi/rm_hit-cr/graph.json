@@ -1,0 +1,226 @@
+[
+    {
+        "group": 1, 
+        "imports": [], 
+        "name": "00_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 1, 
+        "imports": [
+            "00_selectfiles"
+        ], 
+        "name": "01_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 2, 
+        "imports": [], 
+        "name": "02_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 2, 
+        "imports": [
+            "02_selectfiles"
+        ], 
+        "name": "03_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 3, 
+        "imports": [], 
+        "name": "04_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 3, 
+        "imports": [
+            "04_selectfiles"
+        ], 
+        "name": "05_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 4, 
+        "imports": [], 
+        "name": "06_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 4, 
+        "imports": [
+            "06_selectfiles"
+        ], 
+        "name": "07_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 5, 
+        "imports": [], 
+        "name": "08_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 5, 
+        "imports": [
+            "08_selectfiles"
+        ], 
+        "name": "09_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 6, 
+        "imports": [], 
+        "name": "10_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 6, 
+        "imports": [
+            "10_selectfiles"
+        ], 
+        "name": "11_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 7, 
+        "imports": [], 
+        "name": "12_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 7, 
+        "imports": [
+            "12_selectfiles"
+        ], 
+        "name": "13_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 8, 
+        "imports": [], 
+        "name": "14_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 8, 
+        "imports": [
+            "14_selectfiles"
+        ], 
+        "name": "15_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 9, 
+        "imports": [], 
+        "name": "16_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 9, 
+        "imports": [
+            "16_selectfiles"
+        ], 
+        "name": "17_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 10, 
+        "imports": [], 
+        "name": "18_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 10, 
+        "imports": [
+            "18_selectfiles"
+        ], 
+        "name": "19_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 11, 
+        "imports": [], 
+        "name": "20_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 11, 
+        "imports": [
+            "20_selectfiles"
+        ], 
+        "name": "21_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 12, 
+        "imports": [], 
+        "name": "22_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 12, 
+        "imports": [
+            "22_selectfiles"
+        ], 
+        "name": "23_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 13, 
+        "imports": [], 
+        "name": "24_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 13, 
+        "imports": [
+            "24_selectfiles"
+        ], 
+        "name": "25_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 14, 
+        "imports": [], 
+        "name": "26_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 14, 
+        "imports": [
+            "26_selectfiles"
+        ], 
+        "name": "27_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 15, 
+        "imports": [], 
+        "name": "28_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 15, 
+        "imports": [
+            "28_selectfiles"
+        ], 
+        "name": "29_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 16, 
+        "imports": [], 
+        "name": "30_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 16, 
+        "imports": [
+            "30_selectfiles"
+        ], 
+        "name": "31_cluster", 
+        "size": 1
+    }
+]

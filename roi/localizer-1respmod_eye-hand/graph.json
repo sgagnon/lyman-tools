@@ -1,0 +1,354 @@
+[
+    {
+        "group": 1, 
+        "imports": [], 
+        "name": "00_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 1, 
+        "imports": [
+            "00_selectfiles"
+        ], 
+        "name": "01_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 1, 
+        "imports": [
+            "01_cluster"
+        ], 
+        "name": "02_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 2, 
+        "imports": [], 
+        "name": "03_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 2, 
+        "imports": [
+            "03_selectfiles"
+        ], 
+        "name": "04_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 2, 
+        "imports": [
+            "04_cluster"
+        ], 
+        "name": "05_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 3, 
+        "imports": [], 
+        "name": "06_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 3, 
+        "imports": [
+            "06_selectfiles"
+        ], 
+        "name": "07_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 3, 
+        "imports": [
+            "07_cluster"
+        ], 
+        "name": "08_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 4, 
+        "imports": [], 
+        "name": "09_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 4, 
+        "imports": [
+            "09_selectfiles"
+        ], 
+        "name": "10_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 4, 
+        "imports": [
+            "10_cluster"
+        ], 
+        "name": "11_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 5, 
+        "imports": [], 
+        "name": "12_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 5, 
+        "imports": [
+            "12_selectfiles"
+        ], 
+        "name": "13_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 5, 
+        "imports": [
+            "13_cluster"
+        ], 
+        "name": "14_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 6, 
+        "imports": [], 
+        "name": "15_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 6, 
+        "imports": [
+            "15_selectfiles"
+        ], 
+        "name": "16_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 6, 
+        "imports": [
+            "16_cluster"
+        ], 
+        "name": "17_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 7, 
+        "imports": [], 
+        "name": "18_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 7, 
+        "imports": [
+            "18_selectfiles"
+        ], 
+        "name": "19_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 7, 
+        "imports": [
+            "19_cluster"
+        ], 
+        "name": "20_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 8, 
+        "imports": [], 
+        "name": "21_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 8, 
+        "imports": [
+            "21_selectfiles"
+        ], 
+        "name": "22_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 8, 
+        "imports": [
+            "22_cluster"
+        ], 
+        "name": "23_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 9, 
+        "imports": [], 
+        "name": "24_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 9, 
+        "imports": [
+            "24_selectfiles"
+        ], 
+        "name": "25_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 9, 
+        "imports": [
+            "25_cluster"
+        ], 
+        "name": "26_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 10, 
+        "imports": [], 
+        "name": "27_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 10, 
+        "imports": [
+            "27_selectfiles"
+        ], 
+        "name": "28_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 10, 
+        "imports": [
+            "28_cluster"
+        ], 
+        "name": "29_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 11, 
+        "imports": [], 
+        "name": "30_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 11, 
+        "imports": [
+            "30_selectfiles"
+        ], 
+        "name": "31_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 11, 
+        "imports": [
+            "31_cluster"
+        ], 
+        "name": "32_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 12, 
+        "imports": [], 
+        "name": "33_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 12, 
+        "imports": [
+            "33_selectfiles"
+        ], 
+        "name": "34_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 12, 
+        "imports": [
+            "34_cluster"
+        ], 
+        "name": "35_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 13, 
+        "imports": [], 
+        "name": "36_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 13, 
+        "imports": [
+            "36_selectfiles"
+        ], 
+        "name": "37_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 13, 
+        "imports": [
+            "37_cluster"
+        ], 
+        "name": "38_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 14, 
+        "imports": [], 
+        "name": "39_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 14, 
+        "imports": [
+            "39_selectfiles"
+        ], 
+        "name": "40_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 14, 
+        "imports": [
+            "40_cluster"
+        ], 
+        "name": "41_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 15, 
+        "imports": [], 
+        "name": "42_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 15, 
+        "imports": [
+            "42_selectfiles"
+        ], 
+        "name": "43_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 15, 
+        "imports": [
+            "43_cluster"
+        ], 
+        "name": "44_sinker", 
+        "size": 1
+    }, 
+    {
+        "group": 16, 
+        "imports": [], 
+        "name": "45_selectfiles", 
+        "size": 1
+    }, 
+    {
+        "group": 16, 
+        "imports": [
+            "45_selectfiles"
+        ], 
+        "name": "46_cluster", 
+        "size": 1
+    }, 
+    {
+        "group": 16, 
+        "imports": [
+            "46_cluster"
+        ], 
+        "name": "47_sinker", 
+        "size": 1
+    }
+]
