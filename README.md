@@ -5,6 +5,12 @@ This toolbox is intended to provide some helpful scripts for basic fMRI analyses
 building off the [Lyman](https://github.com/mwaskom/lyman) pipeline. Some code is adapted
 from Lyman, and [Ian Ballard](https://github.com/iancballard?tab=repositories).
 
+## ROI Tools
+
+### Create a spherical ROI from peak activation
+
+`create_sphere_frompeak.py`: Take the peak MNI coordinate from group `zstat1_localmax.csv`, transform into avg152 coordinate space, create a sphere of `sphere_rad`mm around the peak, and then mask with thresholded map. Output both the sphere and masked sphere niftis. This is useful to run before extracting parameter estimates from an ROI of interest to visualize the pattern of effect. 
+
 ## Timeseries analyses
 
 These analyses assume that your functional data has been processed with some variant of 
