@@ -79,8 +79,12 @@ def main(arglist):
     for roi in rois:
         print roi
         data = df[df.roi.isin([roi])]
-        filepath = op.join(project['analysis_dir'], exp['exp_name'], 
-                           'group/roi', 'pe_' + roi + '.csv')
+        if isinstance(args.threshold, str):
+            filepath = op.join(project['analysis_dir'], exp['exp_name'], 
+                            'group/roi', 'pe_' + roi + '_' +args.threshold[:-3] + '.csv')
+        else:
+            filepath = op.join(project['analysis_dir'], exp['exp_name'], 
+                            'group/roi', 'pe_' + roi + '.csv')
         data.to_csv(filepath)
 
 
@@ -114,10 +118,14 @@ def extract_means(masks, subject_list, exp, project, conditions):
 
             for roi, hemi, roi_type in masks.values:
 
-                if roi_type == 'anat':
-                    mask_name = hemi + '-' + roi
+                # if something under hemi, add to roi name, otherwise just use roi
+                if not isinstance(hemi, float):
+                    if roi_type == 'anat':
+                        mask_name = hemi + '-' + roi
+                    else:
+                        mask_name = hemi + '-' + roi
                 else:
-                    mask_name = hemi + '-' + roi
+                    mask_name = roi
 
                 # Read in the mask as bool using nibabel:
                 if exp['regspace'] == 'mni':
@@ -217,7 +225,7 @@ def parse_args(arglist):
     parser.add_argument("-experiment", help="experimental paradigm")
     parser.add_argument("-altmodel", help="alternate model to fit")
     parser.add_argument("-masks", help="pandas df to load in")
-    parser.add_argument("-mni_space", help="boolean: false for any anat ROIs")
+    parser.add_argument("-mni_space", action="store_true", help="Flag if true, leave out for any anat ROIs")
     parser.add_argument("-contrast_exp", default="None", help="String (regular experiment if no localizer)")
     parser.add_argument("-threshold", help="True (standard thresh), number to specify")
     parser.add_argument("-group", default="group", help="group directory")
