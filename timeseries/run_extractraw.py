@@ -12,6 +12,7 @@ import shutil
 import imp
 import re
 from textwrap import dedent
+import time
 
 import os.path as op
 
@@ -47,12 +48,14 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
 
     num_voxels = np.sum(nib.load(mask_path).get_data(), axis=None).astype(int)
 
-    run_list = list(onsets.run.unique())
+    run_list = list(set(onsets.run))
     for run in run_list:
         print 'run: ' + str(run)
+        run = int(run)
 
         ts_path = exp['tsfile'].format(subid=subid, run_id=run)
         func_masked = func_masker.fit_transform(ts_path)
+        n_trs = func_masked.shape[0]
 
         # Get y TRs and labels
         run_events = onsets[onsets.run == run].reset_index() #reset index so matches for adding in mean activity
@@ -62,14 +65,24 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
             ev_trs_run = np.ceil((run_events.onset + tr_shift)/exp['tr']).astype(int)
             ev_trs_run = ev_trs_run.replace(to_replace=0, value=1) # to deal w/indexing later on, for onsets of 0
 
+            ev_trs_ind = ev_trs_run-1 # back for indexing w/0 as 1st TR
+
+            # only take TRs that are actually in the timeseries
+            if max(ev_trs_ind) >= n_trs:
+                print 'Timeseries is ' + str(func_masked.shape[0]) + ' trs...' + \
+                      'but you want TR: ' + str(max(ev_trs_ind + 1))
+
+                ev_trs_ind = ev_trs_ind[ev_trs_ind < n_trs]
+
             # print ev_trs_run
-            run_events.loc[:, 'mean_activity'] = pd.Series(pd.DataFrame(func_masked[ev_trs_run-1, :]).mean(axis=1),
+            run_events.loc[:, 'mean_activity'] = pd.Series(pd.DataFrame(func_masked[ev_trs_ind, :]).mean(axis=1),
                                                            index=run_events.index)
 
             run_events.loc[:, 'subid'] = subid
             run_events.loc[:, 'mask'] = args.mask_name
             run_events.loc[:, 'time'] = tr_shift
             d_m = d_m.append(run_events, ignore_index=True)
+
 
     return d_m
 
@@ -94,26 +107,28 @@ def main(arglist):
     d_m = pd.DataFrame()
     for subid in subjects:
         print subid + '-----------------------------------------------'
-    
+
         # Figure out which conditions to examine
         cond_list = list(pd.read_csv(exp['onsetfile'].format(subid=subid)).condition.unique())
-        cond_list.remove('nuisance') # remove nuisance trials
+
+        if 'nuisance' in cond_list:
+            cond_list.remove('nuisance') # remove nuisance trials
         exp['cond_list'] = cond_list
-        
+
         d_m = extract_mean(d_m, subid, exp, args)
 
     # save csv of data
     filepath = op.join(exp['expdir'], 'group/roi', 'extractraw_' + args.extract_info +
-                                                   '_' + args.mask_name + '.csv')
+                       '_' + args.mask_name + '.csv')
     d_m.to_csv(filepath, index=False)
 
     # Integrate over specified time points and save
     dm_wide = d_m.pivot_table(index=['subid', 'mask', 'run', 'onset', 'condition'],
-                              values='mean_activity', columns=['time'], 
+                              values='mean_activity', columns=['time'],
                               fill_value=np.nan).reset_index()
     dm_wide['integrated_activity'] = sp.trapz(dm_wide[exp['tr_integrate']], axis=1)
     filepath = op.join(exp['expdir'], 'group/roi', 'extractraw_integrated_' + args.extract_info +
-                                                   '_' + args.mask_name + '.csv')
+                       '_' + args.mask_name + '.csv')
     dm_wide.to_csv(filepath, index=False)
 
 def parse_args(arglist):

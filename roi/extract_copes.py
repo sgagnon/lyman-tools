@@ -60,7 +60,7 @@ def main(arglist):
 
     # Read in the masks of interest
     print '******* Reading in mask info... ********'
-    masks = pd.read_csv(op.join(project['analysis_dir'], args.experiment, 'group', args.masks))
+    masks = pd.read_csv(op.join(project['analysis_dir'], exp['exp_name'], 'group', args.masks))
     print masks
 
     # Conditions to extract
@@ -69,10 +69,11 @@ def main(arglist):
     # Now extract the means
     print '******* Extracting mean copes... ********'
     df = extract_means(masks, subject_list, exp, project, conditions)
+    # print df.head()
 
     # Output the data
     if args.group_info: # add in group data if relevant
-        df = df.merge(group_info)
+        df = df.merge(group_info, how='left')
 
     print '******* Writing out data... ********'
     rois = df.roi.unique()
@@ -80,17 +81,19 @@ def main(arglist):
         print roi
         data = df[df.roi.isin([roi])]
         if isinstance(args.threshold, str):
-            filepath = op.join(project['analysis_dir'], exp['exp_name'], 
-                            'group/roi', 'pe_' + roi + '_' +args.threshold[:-3] + '.csv')
+            filepath = op.join(project['analysis_dir'], exp['exp_name'],
+                               'group/roi', 'pe_' + roi + '_' +args.threshold[:-3] + '.csv')
         else:
-            filepath = op.join(project['analysis_dir'], exp['exp_name'], 
-                            'group/roi', 'pe_' + roi + '.csv')
+            filepath = op.join(project['analysis_dir'], exp['exp_name'],
+                               'group/roi', 'pe_' + roi + '.csv')
+
+        print 'Filepath = ' + filepath
         data.to_csv(filepath)
 
 
 def extract_means(masks, subject_list, exp, project, conditions):
-    
-    df = pd.DataFrame(columns=('subid','roi','regspace', 'smoothing','mask_vox','hemi','cond','value'))
+
+    df = pd.DataFrame(columns=('subid', 'roi', 'regspace', 'smoothing', 'mask_vox', 'hemi', 'cond', 'value'))
 
     # remove nuisance from contrasts
     if 'nuisance' in conditions:
@@ -99,7 +102,7 @@ def extract_means(masks, subject_list, exp, project, conditions):
     print conditions
     contrast_list = conditions
     contrast_names = conditions
-        
+
     # Setup counter for printing out info:
     output = True
 
@@ -224,7 +227,7 @@ def parse_args(arglist):
     parser.formatter_class = argparse.RawDescriptionHelpFormatter
     parser.add_argument("-experiment", help="experimental paradigm")
     parser.add_argument("-altmodel", help="alternate model to fit")
-    parser.add_argument("-masks", help="pandas df to load in")
+    parser.add_argument("-masks", help="csv file to load into pandas df")
     parser.add_argument("-mni_space", action="store_true", help="Flag if true, leave out for any anat ROIs")
     parser.add_argument("-contrast_exp", default="None", help="String (regular experiment if no localizer)")
     parser.add_argument("-threshold", help="True (standard thresh), number to specify")
