@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 """
 Script to extract raw timeseries, time locked to event onsets
+Make sure timeseries are registered before running this 
+(e.g., run_fmri.py -e ap_memory_raw -w reg -timeseries -regspace epi -n 20)
 
 EXAMPLE: 
 python run_extractraw.py -extract_info AP_mvpa_raw -mask_type mask -mask_name lh-hippocampus-tail
