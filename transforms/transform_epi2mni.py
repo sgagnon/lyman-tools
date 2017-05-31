@@ -17,7 +17,6 @@ import lyman.workflows as wf
 from lyman import tools
 from lyman.tools import add_suffix, submit_cmdline
 
-from surfer import Brain, project_volume_data
 
 ##########################################
 # Set up some info for this experiment
@@ -28,8 +27,16 @@ space = 'mni'
 smoothing = 'unsmoothed'
 subjects = None
 regtype = 'model'
-searchlight_path = "searchlight/localizer_acc_{subject_id}.nii.gz"
 interpolation = "trilinear"
+
+# localizer
+# time_list = [4.5]
+# searchlight_path = "searchlight/localizer_acc_{subject_id}.nii.gz"
+
+# reinstatement
+time_list = [0,2,4,6,8,10,12]
+searchlight_dir = 'searchlight_test'
+searchlight_path = searchlight_dir + "/sourcehit_time{time}_acc_{{subject_id}}.nii.gz"
 
 ##########################################
 # Pull info from project
@@ -79,52 +86,68 @@ else:
 ref_file = fsl.Info.standard_image("avg152T1_brain.nii.gz")
 
 in_file = op.join(analysis_dir, reg_templates['searchlight'])
-out_dir = "searchlight"
 out_fname = op.basename(add_suffix(in_file, "warp"))
-out_file =  op.join(analysis_dir, 'searchlight', out_fname)
-out_rigid = op.join(analysis_dir, 'searchlight', op.basename(add_suffix(out_file, "anat")))
+out_file =  op.join(analysis_dir, searchlight_dir, out_fname)
+out_rigid = op.join(analysis_dir, searchlight_dir, op.basename(add_suffix(out_file, "anat")))
 
 
 ##########################################
 # Warp images
 ##########################################
-# for subid in subject_list:
-#     print subid
 
-#     continuous_interp = dict(trilinear="trilin",
-#                             spline="cubic")[interpolation]
-#     interp = "nearest" if "mask" in in_file else continuous_interp
-#     cmdline_rigid = ["mri_vol2vol",
-#                     "--mov", in_file.format(subject_id=subid),
-#                     "--reg", reg_templates['rigids'].format(run=1, subject_id=subid),
-#                     "--fstarg",
-#                     "--" + interp,
-#                     "--o", out_rigid.format(subject_id=subid),
-#                     "--no-save-reg"]
-#     cmdline = " ".join(cmdline_rigid)
-#     print cmdline
-#     os.system(cmdline)
+print subject_list
 
-#     continuous_interp = dict(trilinear="trilin",
-#                             spline="BSpline")[interpolation]
-#     interp = "NN" if "mask" in in_file else continuous_interp
-#     cmdline_warp = ["WarpImageMultiTransform",
-#                     "3",
-#                     out_rigid.format(subject_id=subid),
-#                     out_file.format(subject_id=subid),
-#                     reg_templates['warpfield'].format(subject_id=subid),
-#                     reg_templates['affine'].format(subject_id=subid),
-#                     "-R", ref_file]
-#     if interp != "trilin":
-#         cmdline_warp.append("--use-" + interp)
-#     cmdline = " ".join(cmdline_warp)
-#     print cmdline
-#     os.system(cmdline)
+for time in time_list:
+
+    # update accordingly for time
+    if len(time_list) > 1:
+        in_file_spec = in_file.format(time=str(time))
+        out_file_spec = out_file.format(time=str(time))
+        out_rigid_spec = out_rigid.format(time=str(time))
+    else:
+        in_file_spec = in_file
+        out_file_spec = out_file
+        out_rigid_spec = out_rigid
+
+    for subid in subject_list:
+        print subid
+
+        continuous_interp = dict(trilinear="trilin",
+                                 spline="cubic")[interpolation]
+        interp = "nearest" if "mask" in in_file_spec else continuous_interp
+        cmdline_rigid = ["mri_vol2vol",
+                         "--mov", in_file_spec.format(subject_id=subid),
+                         "--reg", reg_templates['rigids'].format(run=1, subject_id=subid),
+                         "--fstarg",
+                         "--" + interp,
+                         "--o", out_rigid_spec.format(subject_id=subid),
+                         "--no-save-reg"]
+        cmdline = " ".join(cmdline_rigid)
+        print cmdline
+        os.system(cmdline)
+
+        continuous_interp = dict(trilinear="trilin",
+                                 spline="BSpline")[interpolation]
+        interp = "NN" if "mask" in in_file else continuous_interp
+        cmdline_warp = ["WarpImageMultiTransform",
+                        "3",
+                        out_rigid_spec.format(subject_id=subid),
+                        out_file_spec.format(subject_id=subid),
+                        reg_templates['warpfield'].format(subject_id=subid),
+                        reg_templates['affine'].format(subject_id=subid),
+                        "-R", ref_file]
+        if interp != "trilin":
+            cmdline_warp.append("--use-" + interp)
+        cmdline = " ".join(cmdline_warp)
+        print cmdline
+        os.system(cmdline)
 
 ##########################################
 # Combine across subjects into 4d group image
 ##########################################
 
+##### LOCALIZER
+#################################
 # cmdline_merge = ["fslmerge",
 #                  "-t",
 #                  "/share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_4D",
@@ -136,20 +159,71 @@ out_rigid = op.join(analysis_dir, 'searchlight', op.basename(add_suffix(out_file
 # fslmaths /share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_4D -sub 0.3333 -Tmean /share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_mean
 # fslmaths /share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_4D -sub 0.3333 /share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_4D
 
+##### REINSTATEMENT
+#################################
+
+for time in time_list:
+
+    # Create a 4D image from all the subjects data
+    cmdline_merge = ["fslmerge",
+                     "-t",
+                     "/share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_4D".format(time=str(time)),
+                     "/share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_*_warp.nii.gz".format(time=str(time))]
+    cmdline = " ".join(cmdline_merge)
+    print cmdline
+    os.system(cmdline)
+
+    # subtract chance, and take the mean across subjects
+    cmdline_mean = ["fslmaths",
+                    "/share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_4D".format(time=str(time)),
+                    "-sub 0.3333 -Tmean",
+                    "/share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_mean".format(time=str(time))]
+    cmdline = " ".join(cmdline_mean)
+    print cmdline
+    os.system(cmdline)
+
+    # subtract chance (0.33) from 4D (for subsequent 1-sample t-testing against chance)
+    cmdline_mean = ["fslmaths",
+                    "/share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_4D".format(time=str(time)),
+                    "-sub 0.3333",
+                    "/share/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_4D".format(time=str(time))]
+    cmdline = " ".join(cmdline_mean)
+    print cmdline
+    os.system(cmdline)
+
+
 ##########################################
 # Plot group mean accuracy on surface
 ##########################################
 
-brain = Brain("fsaverage", "split", "inflated",  views=['lat', 'med', 'ven'], background="white")
-volume_file = "/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_t_tstat1.nii.gz"
+# from surfer import Brain, project_volume_data
 
-reg_file = os.path.join(os.environ['FREESURFER_HOME'], "average/mni152.register.dat")
+##### LOCALIZER
+#################################
+# brain = Brain("fsaverage", "split", "inflated",  views=['lat', 'med', 'ven'], background="white")
+# volume_file = "/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_t_tstat1.nii.gz"
 
-for hemi in ['lh', 'rh']:
-    zstat = project_volume_data(volume_file, hemi, subject_id="fsaverage", smooth_fwhm=0.5)
-    brain.add_overlay(zstat, hemi=hemi, min=2.3)
-brain.save_image('/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_t_tstat1_t23_surf.png')
+# reg_file = os.path.join(os.environ['FREESURFER_HOME'], "average/mni152.register.dat")
 
+# for hemi in ['lh', 'rh']:
+#     zstat = project_volume_data(volume_file, hemi, reg_file, smooth_fwhm=0.5)
+#     brain.add_overlay(zstat, hemi=hemi, min=2.3)
+# brain.save_image('/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight/localizer_acc_t_tstat1_t23_surf.png')
+
+
+##### REINSTATEMENT
+#################################
+
+# for time in time_list:
+#     brain = Brain("fsaverage", "split", "inflated",  views=['lat', 'med', 'ven'], background="white")
+#     volume_file = "/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_mean.nii.gz".format(time=str(time))
+
+#     reg_file = os.path.join(os.environ['FREESURFER_HOME'], "average/mni152.register.dat")
+
+#     for hemi in ['lh', 'rh']:
+#         zstat = project_volume_data(volume_file, hemi, reg_file, smooth_fwhm=0.5)
+#         brain.add_overlay(zstat, hemi=hemi, min=0.05)
+#     brain.save_image('/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time{time}_acc_mean_surf.png'.format(time=str(time)))
 
 ##########################################
 # 1-samp t-test
