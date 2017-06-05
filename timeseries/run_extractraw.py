@@ -46,7 +46,10 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
     # apply smoothing and standardization of features here if necessary
     func_masker = NiftiMasker(mask_img=mask_path,
                               smoothing_fwhm=exp['smoothing_fwhm'],
-                              standardize=exp['standardize'])
+                              standardize=exp['standardize_feat'])
+
+    if exp['standardize_feat']:
+        print 'Scaling each feature'
 
     num_voxels = np.sum(nib.load(mask_path).get_data(), axis=None).astype(int)
 
@@ -65,7 +68,8 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
         for tr_shift in exp['tr_shift']:
             # Figure out the TRs
             ev_trs_run = np.ceil((run_events.onset + tr_shift)/exp['tr']).astype(int)
-            ev_trs_run = ev_trs_run.replace(to_replace=0, value=1) # to deal w/indexing later on, for onsets of 0
+            # to deal w/indexing later on, for onsets of 0
+            ev_trs_run = ev_trs_run.replace(to_replace=0, value=1)
 
             ev_trs_ind = ev_trs_run-1 # back for indexing w/0 as 1st TR
 
@@ -77,7 +81,24 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
                 ev_trs_ind = ev_trs_ind[ev_trs_ind < n_trs]
 
             # print ev_trs_run
-            run_events.loc[:, 'mean_activity'] = pd.Series(pd.DataFrame(func_masked[ev_trs_ind, :]).mean(axis=1),
+
+            # Compute mean for each TR
+            mean_ts = np.mean(func_masked, axis=1)
+
+            # scale across ROI
+            if exp['standardize_roi']:
+                print 'Scaling mean across time'
+                mean_ts = sp.stats.mstats.zscore(mean_ts)
+
+            # Pull out relevant indices, combine with run event info
+            ts_vals = mean_ts[ev_trs_ind]
+
+            # this is old code, where taking the mean over voxels, but replaced with above code
+            # the DF functionality filled in NaNs for missing timepoints
+            # ts_vals = pd.DataFrame(func_masked[ev_trs_ind, :]).mean(axis=1)
+
+            # if TRs go beyond what's in timeseries, values are NaN
+            run_events.loc[:, 'mean_activity'] = pd.Series(ts_vals,
                                                            index=run_events.index)
 
             run_events.loc[:, 'subid'] = subid

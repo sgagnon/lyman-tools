@@ -7,13 +7,15 @@ design = 'AP_memory_itemhits.csv'
 func_exp = 'mvpa_raw' 
 onset_exp = 'ap_memory_raw'
 smoothing_fwhm = 0
-standardize = True
+standardize_feat = False
+standardize_roi = True
 tr = float(2)
 tr_shift = [0, 2, 4, 6, 8, 10, 12] # in seconds
 tr_integrate = [0, 2, 4, 6, 8, 10] # in seconds
 n_runs = 6
 
 basedir = op.join('/share/awagner/sgagnon', project)
+# basedir = op.join('/Volumes/group/awagner/sgagnon', project)
 analydir = op.join(basedir, 'analysis', func_exp)
 expdir = op.join(basedir, 'analysis', onset_exp)
 subjfile = op.join(basedir, 'scripts/subjects.txt')
