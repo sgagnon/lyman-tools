@@ -47,7 +47,6 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
     func_masker = NiftiMasker(mask_img=mask_path,
                               smoothing_fwhm=exp['smoothing_fwhm'],
                               standardize=exp['standardize_feat'])
-
     if exp['standardize_feat']:
         print 'Scaling each feature'
 
@@ -61,6 +60,13 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
         ts_path = exp['tsfile'].format(subid=subid, run_id=run)
         func_masked = func_masker.fit_transform(ts_path)
         n_trs = func_masked.shape[0]
+
+        # Compute mean for each TR
+        mean_ts = np.mean(func_masked, axis=1)
+
+        if exp['standardize_roi']:
+            print 'Scaling ROI mean across time'
+            mean_ts = sp.stats.mstats.zscore(mean_ts)
 
         # Get y TRs and labels
         run_events = onsets[onsets.run == run].reset_index() #reset index so matches for adding in mean activity
@@ -79,26 +85,14 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
                       'but you want TR: ' + str(max(ev_trs_ind + 1))
 
                 ev_trs_ind = ev_trs_ind[ev_trs_ind < n_trs]
-
             # print ev_trs_run
-
-            # Compute mean for each TR
-            mean_ts = np.mean(func_masked, axis=1)
-
-            # scale across ROI
-            if exp['standardize_roi']:
-                print 'Scaling mean across time'
-                mean_ts = sp.stats.mstats.zscore(mean_ts)
-
-            # Pull out relevant indices, combine with run event info
-            ts_vals = mean_ts[ev_trs_ind]
 
             # this is old code, where taking the mean over voxels, but replaced with above code
             # the DF functionality filled in NaNs for missing timepoints
             # ts_vals = pd.DataFrame(func_masked[ev_trs_ind, :]).mean(axis=1)
 
             # if TRs go beyond what's in timeseries, values are NaN
-            run_events.loc[:, 'mean_activity'] = pd.Series(ts_vals,
+            run_events.loc[:, 'mean_activity'] = pd.Series(mean_ts[ev_trs_ind],
                                                            index=run_events.index)
 
             run_events.loc[:, 'subid'] = subid
