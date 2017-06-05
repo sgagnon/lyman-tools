@@ -68,6 +68,11 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
             print 'Scaling ROI mean across time'
             mean_ts = sp.stats.mstats.zscore(mean_ts)
 
+        if exp['percentsig_roi']:
+            print 'Converting to %sig change using ts mean'
+            mean_oftimecourse = np.mean(mean_ts)
+            mean_ts = (mean_ts/mean_oftimecourse * 100) - 100
+
         # Get y TRs and labels
         run_events = onsets[onsets.run == run].reset_index() #reset index so matches for adding in mean activity
 
@@ -83,8 +88,8 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
             if max(ev_trs_ind) >= n_trs:
                 print 'Timeseries is ' + str(func_masked.shape[0]) + ' trs...' + \
                       'but you want TR: ' + str(max(ev_trs_ind + 1))
-
                 ev_trs_ind = ev_trs_ind[ev_trs_ind < n_trs]
+
             # print ev_trs_run
 
             # this is old code, where taking the mean over voxels, but replaced with above code
