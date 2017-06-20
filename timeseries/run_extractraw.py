@@ -74,7 +74,8 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
             mean_ts = (mean_ts/mean_oftimecourse * 100) - 100
 
         # Get y TRs and labels
-        run_events = onsets[onsets.run == run].reset_index() #reset index so matches for adding in mean activity
+        #reset index so matches for adding in mean activity
+        run_events = onsets[onsets.run == run].reset_index()
 
         for tr_shift in exp['tr_shift']:
             # Figure out the TRs

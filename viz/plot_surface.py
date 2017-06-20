@@ -82,7 +82,7 @@ def add_stat_overlay(b, stat_file, thresh, max, sign, hemi='lh', sig_to_z=False,
 		stat_data = z_data
     else:
 		reg_file = op.join(os.environ['FREESURFER_HOME'], 'average/mni152.register.dat')
-		stat_data = project_volume_data(stat_file, hemi, reg_file=reg_file, smooth_fwhm=5)
+		stat_data = project_volume_data(stat_file, hemi, reg_file=reg_file, smooth_fwhm=5, verbose=False)
 
     # Plot the statistical data
     stat_data = stat_data.squeeze()
@@ -105,7 +105,21 @@ def plot_contrasts(subj, hemi, exps, contrasts, colors,
                    group='group', regspace='fsaverage',
                    snap_views = ['lat', 'med'], sig_to_z=True,
                    plot_conjunction=False, conjunct_color='Purples_r', colorbar=False, sign='pos', corrected=True, 
-                   contour=False, n_contours=7):
+                   contour=False, n_contours=7, view_dict=None):
+                   
+    if view_dict is None:
+        view_dict = dict(lat_rot=dict(lh=[160, 50],
+                                      rh=[20, 50]),
+                         lat=dict(lh=[180, 90],
+                                  rh=[180, -90]),
+                         fro=dict(lh=[135, 80],
+                                  rh=[45, 80]),
+                         par=dict(lh=[230, 55],
+                                  rh=[310, 55]),
+                         med_rot=dict(lh=[325, 90],
+                                      rh=[215, 90]),
+                         med=dict(lh=[0,90],
+                                  rh=[0,-90]))
     
     if contour:
         b = Brain(subj, hemi, 'semi7', background="white", views=['parietal'], config_opts={"cortex": "low_contrast"})
@@ -187,15 +201,6 @@ def plot_contrasts(subj, hemi, exps, contrasts, colors,
     if save_file:
         b.save_imageset(save_name, save_views)
     else:
-        view_dict = dict(lat=dict(lh=[160, 50],
-                                  rh=[20, 50]),
-                         fro=dict(lh=[135, 80],
-                                  rh=[45, 80]),
-                         par=dict(lh=[230, 55],
-                                  rh=[310, 55]),
-                         med=dict(lh=[325, 90],
-                                  rh=[215, 90]))
-
 
         snapshots = dict()
         for view in snap_views:
