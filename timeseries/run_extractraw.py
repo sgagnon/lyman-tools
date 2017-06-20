@@ -78,11 +78,15 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
         run_events = onsets[onsets.run == run].reset_index()
 
         for tr_shift in exp['tr_shift']:
-            # Figure out the TRs
-            ev_trs_run = np.ceil((run_events.onset + tr_shift)/exp['tr']).astype(int)
-            # to deal w/indexing later on, for onsets of 0
-            ev_trs_run = ev_trs_run.replace(to_replace=0, value=1)
 
+            # If calculating %sig change rel baseline, get baseline for each trial
+            baseline_trs_run = np.ceil((run_events.onset)/exp['tr']).astype(int)
+            baseline_trs_run = baseline_trs_run.replace(to_replace=0, value=1) # to deal w/indexing later on, for onsets of 0
+            baseline_trs_ind = baseline_trs_run-1 # back for indexing w/0 as 1st TR
+
+            # Figure out the TRs, timeshifting
+            ev_trs_run = np.ceil((run_events.onset + tr_shift)/exp['tr']).astype(int)
+            ev_trs_run = ev_trs_run.replace(to_replace=0, value=1) # to deal w/indexing later on, for onsets of 0
             ev_trs_ind = ev_trs_run-1 # back for indexing w/0 as 1st TR
 
             # only take TRs that are actually in the timeseries
@@ -90,6 +94,7 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
                 print 'Timeseries is ' + str(func_masked.shape[0]) + ' trs...' + \
                       'but you want TR: ' + str(max(ev_trs_ind + 1))
                 ev_trs_ind = ev_trs_ind[ev_trs_ind < n_trs]
+                baseline_trs_ind = baseline_trs_ind[ev_trs_ind < n_trs]
 
             # print ev_trs_run
 
@@ -97,8 +102,16 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
             # the DF functionality filled in NaNs for missing timepoints
             # ts_vals = pd.DataFrame(func_masked[ev_trs_ind, :]).mean(axis=1)
 
+            # Convert to %sig change rel to basleine
+            if exp['percentsig_roi_relbaseline']:
+                print 'Converting to %sig change relative to baseline, using 0 timepoint'
+                ev_values = (mean_ts[ev_trs_ind]/mean_ts[baseline_trs_ind] * 100) - 100
+                print ev_values
+            else:
+                ev_values = mean_ts[ev_trs_ind]
+
             # if TRs go beyond what's in timeseries, values are NaN
-            run_events.loc[:, 'mean_activity'] = pd.Series(mean_ts[ev_trs_ind],
+            run_events.loc[:, 'mean_activity'] = pd.Series(ev_values,
                                                            index=run_events.index)
 
             run_events.loc[:, 'subid'] = subid

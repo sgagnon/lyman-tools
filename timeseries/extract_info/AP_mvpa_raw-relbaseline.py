@@ -7,10 +7,12 @@ design = 'AP_memory_itemhits.csv'
 func_exp = 'mvpa_raw' 
 onset_exp = 'ap_memory_raw'
 smoothing_fwhm = 0
+
+# Some parameters for how to extract signal
 standardize_feat = False
 standardize_roi = False
-percentsig_roi = True
-percentsig_roi_relbaseline = False
+percentsig_roi = False
+percentsig_roi_relbaseline = True
 tr = float(2)
 tr_shift = [0, 2, 4, 6, 8, 10, 12] # in seconds
 tr_integrate = [0, 2, 4, 6, 8, 10] # in seconds
