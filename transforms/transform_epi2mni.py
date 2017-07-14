@@ -289,6 +289,44 @@ out_rigid = op.join(analysis_dir, searchlight_dir, op.basename(add_suffix(out_fi
 #     brain.close()
 
 
+# Plot yeo network overlaid on reinstatement
+from surfer import Brain, project_volume_data
+import os
+
+time = 6
+hemi = 'lh'
+brain = Brain("fsaverage", hemi, "inflated",  views=['lat', 'par'], background="white")
+
+# volume_file = "/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time"+str(time)+"_acc_t_tstat1_mask_p05corr.nii.gz"
+# 
+# reg_file = os.path.join(os.environ['FREESURFER_HOME'], "average/mni152.register.dat")
+# 
+# zstat = project_volume_data(volume_file, hemi, reg_file, smooth_fwhm=0.5)
+# 
+# if (zstat > 1.96).any():
+# 	brain.add_overlay(zstat, hemi=hemi, min=1.96, max=10)
+brain.add_label('17Networks_DefaultC_IPL', alpha=.8, color='navy', hemi=hemi, borders=True)
+brain.add_label('17Networks_DefaultA_IPL', alpha=.8, color='purple', hemi=hemi, borders=True)
+brain.add_label('dorsalattn', alpha=.8, color='green', hemi=hemi, borders=True)
+brain.add_label('dorsalattn', alpha=.4, color='green', hemi=hemi, borders=False)
+
+brain.add_label('superiorparietal', alpha=.8, color='black', hemi=hemi, borders=True)
+brain.add_label('supramarginal', alpha=.8, color='black', hemi=hemi, borders=True)
+brain.add_label('inferiorparietal', alpha=.8, color='black', hemi=hemi, borders=True)
+
+
+brain.add_label('17Networks_DorsAttnA_SPL', alpha=.8, color='darkgreen', hemi=hemi, borders=True)
+brain.add_label('17Networks_LH_DorsAttnA_TempOcc', alpha=.8, color='darkgreen', hemi=hemi, borders=True)
+brain.add_label('17Networks_DorsAttnA_ParOcc', alpha=.8, color='lightblue', hemi=hemi, borders=True)
+
+
+brain.add_label('17Networks_5', alpha=.8, color='orange', hemi=hemi, borders=True)
+brain.add_label('17Networks_6', alpha=.8, color='orange', hemi=hemi, borders=True)
+
+
+brain.save_image('/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_time'+str(time)+'_acc_t_tstat1_mask_p05corr_YeoDefaultC_IPL.png')
+brain.close()
+
 
 ##########################################
 # Reinstatement 2-sample unpaired t-test between groups
@@ -345,21 +383,21 @@ out_rigid = op.join(analysis_dir, searchlight_dir, op.basename(add_suffix(out_fi
 # 		  -T 
 
 ## Just plot ctrl>stress t-stats, thresholded at p < 0.01 uncorrected
-from surfer import Brain, project_volume_data
-import os
-
-thresh = 2.42 # for p < 0.01, were df = 40 (20+22 - 2)
-max_thresh = 4
-brain = Brain("fsaverage", "split", "inflated",  views=['lat', 'med', 'ven'], background="white")
-
-volume_file = "/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_mean4to10_2sampT_tstat1.nii.gz"
-
-reg_file = os.path.join(os.environ['FREESURFER_HOME'], "average/mni152.register.dat")
-
-for hemi in ['lh', 'rh']:
-	zstat = project_volume_data(volume_file, hemi, reg_file, smooth_fwhm=0.5)
-	
-	if (zstat > thresh).any():
-		brain.add_overlay(zstat, hemi=hemi, min=thresh, max=max_thresh) 
-brain.save_image('/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_mean4to10_2sampT_tstat1_p01.png')
-brain.close()
+# from surfer import Brain, project_volume_data
+# import os
+# 
+# thresh = 2.42 # for p < 0.01, were df = 40 (20+22 - 2)
+# max_thresh = 4
+# brain = Brain("fsaverage", "split", "inflated",  views=['lat', 'med', 'ven'], background="white")
+# 
+# volume_file = "/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_mean4to10_2sampT_tstat1.nii.gz"
+# 
+# reg_file = os.path.join(os.environ['FREESURFER_HOME'], "average/mni152.register.dat")
+# 
+# for hemi in ['lh', 'rh']:
+# 	zstat = project_volume_data(volume_file, hemi, reg_file, smooth_fwhm=0.5)
+# 	
+# 	if (zstat > thresh).any():
+# 		brain.add_overlay(zstat, hemi=hemi, min=thresh, max=max_thresh) 
+# brain.save_image('/Volumes/group/awagner/sgagnon/AP/analysis/mvpa_raw/searchlight_test/sourcehit_mean4to10_2sampT_tstat1_p01.png')
+# brain.close()
