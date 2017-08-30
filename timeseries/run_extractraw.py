@@ -102,7 +102,7 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
                 print 'Timeseries is ' + str(func_masked.shape[0]) + ' trs...' + \
                       'but you want TR: ' + str(max(ev_trs_ind + 1))
                 in_ts_ind = ev_trs_ind < n_trs
-                print in_ts_ind
+                # print in_ts_ind
 
                 ev_trs_ind = ev_trs_ind[in_ts_ind]
                 baseline_trs_ind = baseline_trs_ind[in_ts_ind]
@@ -118,10 +118,10 @@ def extract_mean(d_m, subid, exp, args, save_trials=False):
             if exp['percentsig_roi_relbaseline']:
                 print 'Converting to %sig change relative to baseline, using 0 timepoint'
                 ev_values = (mean_ts[ev_trs_ind]/mean_ts[baseline_trs_ind] * 100) - 100
-                print ev_values
+                # print ev_values
             else:
                 ev_values = mean_ts[ev_trs_ind]
-                print ev_values
+                # print ev_values
 
             # if TRs go beyond what's in timeseries, no values (run_Events is pruned)
             run_events.loc[:, 'mean_activity'] = pd.Series(ev_values,
@@ -168,6 +168,7 @@ def main(arglist):
     # save csv of data
     filepath = op.join(exp['expdir'], 'group/roi', 'extractraw_' + args.extract_info +
                        '_' + args.mask_name + '.csv')
+    print 'Writing out: ' + filepath
     d_m.to_csv(filepath, index=False)
 
     # Integrate over specified time points and save

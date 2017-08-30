@@ -103,6 +103,8 @@ def plot_contrasts(subj, hemi, exps, contrasts, colors,
                    z_thresh, save_name, alpha=1, save_views=['lateral', 'medial'], save_file=True,
                    base_exp='/Volumes/group/awagner/sgagnon/RM',
                    group='group', regspace='fsaverage',
+                   skip_reg_dir=False,
+                   contrast_num=1,
                    snap_views = ['lat', 'med'], sig_to_z=True,
                    plot_conjunction=False, conjunct_color='Purples_r', colorbar=False, sign='pos', corrected=True, 
                    contour=False, n_contours=7, view_dict=None):
@@ -144,13 +146,16 @@ def plot_contrasts(subj, hemi, exps, contrasts, colors,
 		sig_thresh = z_thresh
 		
 		if corrected:
-			sig_name = "zstat1_threshold.nii.gz"
+			sig_name = "zstat"+str(contrast_num)+"_threshold.nii.gz"
 		else:
-			sig_name = "zstat1.nii.gz"
+			sig_name = "zstat"+str(contrast_num)+".nii.gz"
 
 
     # Plot the mask
-    temp_base = op.join(base_exp, 'analysis/%s',group, regspace,'%s') % (exps[0], contrasts[0])
+    if skip_reg_dir:
+        temp_base = op.join(base_exp, 'analysis/%s', group, '%s') % (exps[0], contrasts[0])
+    else:
+        temp_base = op.join(base_exp, 'analysis/%s', group, regspace,'%s') % (exps[0], contrasts[0])
     
     if regspace == 'fsaverage':
 		mask_temp = op.join(temp_base, "{hemi}/mask.mgh")
@@ -166,7 +171,13 @@ def plot_contrasts(subj, hemi, exps, contrasts, colors,
     for exp, contrast in zip(exps, contrasts):
         print exp, contrast
         
-        temp_base = op.join(base_exp, 'analysis/%s', group, regspace,'%s') % (exp, contrast)
+        if skip_reg_dir:
+            if corrected:
+                temp_base = op.join(base_exp, 'analysis/%s', group, '%s') % (exp, contrast)
+            else:
+                temp_base = op.join(base_exp, 'analysis/%s', group, '%s', 'stats') % (exp, contrast)
+        else:
+            temp_base = op.join(base_exp, 'analysis/%s', group, regspace,'%s') % (exp, contrast)
         
     	if regspace == 'fsaverage':
 			stat_temp = op.join(temp_base, "{hemi}/osgm", sig_name)
@@ -197,6 +208,160 @@ def plot_contrasts(subj, hemi, exps, contrasts, colors,
 
         b.add_data(conjunct, min=z_thresh, thresh=z_thresh, max=z_max_max, 
                    colormap=conjunct_color, colorbar=False, alpha=alpha)
+
+    if save_file:
+        b.save_imageset(save_name, save_views)
+    else:
+
+        snapshots = dict()
+        for view in snap_views:
+            a, e = view_dict[view][hemi]
+            b.show_view(dict(azimuth=a, elevation=e))
+            time.sleep(0.5)
+            
+            # crop white space
+            arr = b.screenshot()
+            x,y = np.argwhere((arr != 255).any(axis=-1)).T
+            cropped = arr[x.min() - 5:x.max() + 5, y.min() - 5:y.max() + 5, :]
+            
+            snapshots[view] = cropped
+        return b, snapshots
+
+def plot_groups(subj, hemi, exps, contrast, colors, 
+                z_thresh, save_name, alpha=1, save_views=['lateral', 'medial'], save_file=True,
+                base_exp='/Volumes/group/awagner/sgagnon/RM',
+                groups=['group_control', 'group_stress'], 
+                group_mask_dir='group_control-stress', regspace='fsaverage',
+                skip_reg_dir=False,
+                contrast_num=1,
+                snap_views = ['lat', 'med'], sig_to_z=True,
+                plot_conjunction=False, conjunct_color='Purples_r', colorbar=False, sign='pos', corrected=True, 
+                contour=False, n_contours=7, view_dict=None, add_border=False, border_max=False):
+
+# plot one contrast for 2 diff groups
+    
+    if view_dict is None:
+        view_dict = dict(lat_rot=dict(lh=[160, 50],
+                                      rh=[20, 50]),
+                         lat=dict(lh=[180, 90],
+                                  rh=[180, -90]),
+                         fro=dict(lh=[135, 80],
+                                  rh=[45, 80]),
+                         par=dict(lh=[230, 55],
+                                  rh=[310, 55]),
+                         med_rot=dict(lh=[325, 90],
+                                      rh=[215, 90]),
+                         med=dict(lh=[0,90],
+                                  rh=[0,-90]))
+    
+    if contour:
+        b = Brain(subj, hemi, 'semi7', background="white", views=['parietal'], config_opts={"cortex": "low_contrast"})
+    else:
+        b = Brain(subj, hemi, 'semi7', background="white", views=['parietal'])
+
+    
+    # determine exp mapping
+    if len(exps) == 1:
+        exps = exps * len(groups)
+    
+    # figure out threshold and stats files depending on surf analysis or MNI
+    if sig_to_z:
+        sig_thresh = -np.log10(stats.norm.sf(z_thresh)); 
+        sig_thresh = np.round(sig_thresh) * 10; 
+        
+        if corrected:
+            sig_name = "cache.th%d.%s.sig.masked.mgh" % (sig_thresh, sign)
+        else:
+            sig_name = "sig.mgh"
+    else:
+        sig_thresh = z_thresh
+
+        if corrected:
+            sig_name = "zstat"+str(contrast_num)+"_threshold.nii.gz"
+        else:
+            sig_name = "zstat"+str(contrast_num)+".nii.gz"
+
+
+    # Plot the mask
+    if skip_reg_dir:
+        temp_base = op.join(base_exp, 'analysis/%s', group_mask_dir, '%s') % (exps[0], contrast)
+    else:
+        temp_base = op.join(base_exp, 'analysis/%s', group_mask_dir, regspace,'%s') % (exps[0], contrast)
+    
+    if regspace == 'fsaverage':
+        print 'figure out mask'
+# 		mask_temp = op.join(temp_base, "{hemi}/mask.mgh")
+# 		mask_file = mask_temp.format(contrast=contrast,
+# 									 hemi=hemi, subj=subj)
+    else:
+		mask_temp = op.join(temp_base, "{hemi}.group_mask.mgz")
+		mask_file = mask_temp.format(hemi=hemi)
+	
+    add_mask_overlay(b, mask_file)
+
+    z_max = {}; stat_file = {}; sig_data={}
+    for exp, group in zip(exps, groups):
+        print exp, contrast, group
+        
+        if skip_reg_dir:
+            if corrected:
+                temp_base = op.join(base_exp, 'analysis/%s', group, '%s') % (exp, contrast)
+            else:
+                temp_base = op.join(base_exp, 'analysis/%s', group, '%s', 'stats') % (exp, contrast)
+        else:
+            temp_base = op.join(base_exp, 'analysis/%s', group, regspace,'%s') % (exp, contrast)
+        
+    	if regspace == 'fsaverage':
+			stat_temp = op.join(temp_base, "{hemi}/osgm", sig_name)
+        else:
+			stat_temp = op.join(temp_base, sig_name)
+			
+        z_max[group] = calculate_sat_point(stat_temp, contrast, sign, subj=subj, sig_to_z=sig_to_z)
+        print z_max[group]
+
+        stat_file[group] = stat_temp.format(hemi=hemi)
+
+    z_max_max = z_max[max(z_max, key=z_max.get)]
+    print 'Colorbar max: z = ' + str(z_max_max)
+    for group, color in zip(groups, colors):
+        print contrast, color
+        
+        if contour:
+            b.add_contour_overlay(stat_file[group], colormap=color, colorbar=colorbar,
+                                  line_width=4, n_contours=7, min=z_thresh, 
+                                  remove_existing=False)
+        else:
+            print stat_file[group]
+            sig_data[group] = add_stat_overlay(b, stat_file[group], z_thresh, z_max_max, sign,
+                                                  hemi=hemi, sig_to_z=sig_to_z, color=color, alpha=alpha, 
+                                                  output=True, colorbar=colorbar)
+
+    if plot_conjunction & (sign == 'pos'):
+        print 'plotting conjunction'
+        conjunct = np.min(np.vstack(sig_data.values()), axis=0)
+
+        b.add_data(conjunct, min=z_thresh, thresh=z_thresh, max=z_max_max, 
+                   colormap=conjunct_color, colorbar=False, alpha=alpha)
+
+    # add some overlay (filename should be add_border)
+    if add_border:
+        print 'adding border'
+
+        if border_max:
+            border_max = calculate_sat_point(add_border, '', sign, subj=subj, sig_to_z=sig_to_z)    
+        else:
+            border_max=z_max_max
+        
+        print border_max
+        print z_thresh
+
+        reg_file = op.join(os.environ['FREESURFER_HOME'], 'average/mni152.register.dat')
+        border_data = project_volume_data(add_border, hemi, reg_file=reg_file, smooth_fwhm=5, verbose=False)
+        
+        if len(border_data[border_data > 2.3]) > 0:
+            
+            b.add_contour_overlay(border_data, hemi=hemi, n_contours=4, line_width=4,
+                                  min=z_thresh, max=border_max, colormap='binary_r', colorbar=False)
 
     if save_file:
         b.save_imageset(save_name, save_views)

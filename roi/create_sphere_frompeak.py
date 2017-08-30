@@ -22,7 +22,11 @@ from lyman import tools
 def main(arglist):
     """Main function for workflow setup and execution."""
     args = parse_args(arglist)
-    peak_num = int(args.peak_num)
+
+    if isinstance(args.peak_num, list):
+        peak_num = args.peak_num
+    else:
+        peak_num = int(args.peak_num)
 
     def mni_to_vox(mni_coords, output=True):
         """Given xyz mni coordinates, return ijk voxel coordinates using image affine.
@@ -47,17 +51,18 @@ def main(arglist):
     # Get some project information
     project = lyman.gather_project_info()
 
-    # Read in csv and get voxel coordinates in avg152 coordinate space
-    in_fname = op.join(project['analysis_dir'], args.experiment, args.group, 
-                       'mni', args.contrast, 'zstat1_localmax.csv')
-    out_fname = in_fname[:-12] + 'peak' + args.peak_num + '_'+ args.sphere_rad +'mm_sphere.nii.gz'
-    masked_fname = in_fname[:-12] + 'peak' + args.peak_num + '_'+ args.sphere_rad +'mm_sphere_masked.nii.gz'
-    threshold_fname = in_fname[:-12] + 'threshold.nii.gz'
-    df = pd.read_csv(in_fname)
+    # If peak number, read in csv and get voxel coordinates in avg152 coordinate space
+    if isinstance(peak_num, int):
+        in_fname = op.join(project['analysis_dir'], args.experiment, args.group, 
+                        'mni', args.contrast, 'zstat1_localmax.csv')
+        out_fname = in_fname[:-12] + 'peak' + str(peak_num) + '_'+ args.sphere_rad +'mm_sphere.nii.gz'
+        masked_fname = in_fname[:-12] + 'peak' + str(peak_num) + '_'+ args.sphere_rad +'mm_sphere_masked.nii.gz'
+        threshold_fname = in_fname[:-12] + 'threshold.nii.gz'
+        df = pd.read_csv(in_fname)
 
-    if len(df):
-        coords = df[["x", "y", "z"]].values
-        vox_coords = mni_to_vox(coords)
+        if len(df):
+            coords = df[["x", "y", "z"]].values
+            vox_coords = mni_to_vox(coords)
 
     # Select appropriate coordinate, and create the sphere w/FSL
     # Code borrowed from: http://www.jonaskaplan.com/lab/files/make_roi_sphere.py
