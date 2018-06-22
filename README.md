@@ -36,7 +36,7 @@ so can be helpful for trial-wise correlations between regions or multivariate me
 
 ## PPI analyses
 
-(Adapted from code from Ian Ballard)
+(Adapted from code from Ian Ballard: https://github.com/iancballard/fd_fmri/blob/master/ppi_analysis.ipynb)
 
 ### Generate design files for PPI analysis
 
