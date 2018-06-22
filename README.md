@@ -36,6 +36,8 @@ so can be helpful for trial-wise correlations between regions or multivariate me
 
 ## PPI analyses
 
+(Adapted from code from Ian Ballard)
+
 ### Generate design files for PPI analysis
 
 `run_create_ppidesign.py`: Extract the coregistered preprocessed timeseries from a given 
